@@ -4,8 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI BenchBase | 智能硬件性能评测平台</title>
-  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="./favicon.ico" type="image/x-icon">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background-color: #f5f7fa;
+      color: #2c3e50;
+      overflow-x: hidden;
+    }
+    
     #app-loading {
       position: fixed;
       top: 0;
@@ -16,37 +29,106 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      background: #f5f7fa;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
       z-index: 9999;
-      font-family: Arial, sans-serif;
-      color: #2c3e50;
-      transition: opacity 0.5s;
+      transition: opacity 0.5s ease-out;
     }
+    
     .app-loading-logo {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 20px;
+      width: 100px;
+      height: 100px;
+      margin-bottom: 25px;
       background: linear-gradient(45deg, #4285f4, #34a853);
-      border-radius: 16px;
+      border-radius: 20px;
       display: flex;
       justify-content: center;
       align-items: center;
       color: white;
-      font-size: 32px;
+      font-size: 42px;
       font-weight: bold;
+      box-shadow: 0 8px 20px rgba(66, 133, 244, 0.3);
+      animation: pulse 2s infinite;
     }
+    
     .app-loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(66, 133, 244, 0.2);
-      border-top: 4px solid #4285f4;
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(66, 133, 244, 0.2);
+      border-top: 5px solid #4285f4;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
+    
+    .loading-text {
+      font-size: 22px;
+      font-weight: 500;
+      color: #2c3e50;
+      text-align: center;
+      max-width: 80%;
+      line-height: 1.5;
+    }
+    
+    .progress-container {
+      width: 300px;
+      height: 8px;
+      background-color: rgba(66, 133, 244, 0.2);
+      border-radius: 4px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4285f4, #34a853);
+      border-radius: 4px;
+      animation: progress 2s infinite;
+    }
+    
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 8px 20px rgba(66, 133, 244, 0.3); }
+      50% { transform: scale(1.05); box-shadow: 0 12px 30px rgba(66, 133, 244, 0.4); }
+      100% { transform: scale(1); box-shadow: 0 8px 20px rgba(66, 133, 244, 0.3); }
+    }
+    
+    @keyframes progress {
+      0% { width: 0%; }
+      50% { width: 70%; }
+      100% { width: 100%; }
+    }
+    
+    /* 主应用容器样式 */
+    #app {
+      display: none; /* 初始隐藏，加载完成后显示 */
+      min-height: 100vh;
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .app-loading-logo {
+        width: 80px;
+        height: 80px;
+        font-size: 32px;
+      }
+      
+      .app-loading-spinner {
+        width: 40px;
+        height: 40px;
+      }
+      
+      .loading-text {
+        font-size: 18px;
+      }
+      
+      .progress-container {
+        width: 250px;
+      }
     }
   </style>
 </head>
@@ -54,11 +136,70 @@
   <div id="app-loading">
     <div class="app-loading-logo">AI</div>
     <div class="app-loading-spinner"></div>
-    <h2>初始化 AI 硬件评测平台...</h2>
+    <h2 class="loading-text">初始化 AI 硬件评测平台...</h2>
+    <div class="progress-container">
+      <div class="progress-bar"></div>
+    </div>
   </div>
   
-  <div id="app"></div>
+  <div id="app">
+    <!-- 主应用内容将通过JavaScript动态加载 -->
+  </div>
   
-  <script type="module" src="/src/main.js"></script>
+  <script>
+    // 修复路径问题并添加加载状态管理
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. 动态加载主应用脚本
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = './src/main.js'; // 使用相对路径
+      
+      // 2. 处理脚本加载成功
+      script.onload = () => {
+        // 模拟加载进度（实际项目中可替换为真实加载逻辑）
+        let progress = 0;
+        const progressBar = document.querySelector('.progress-bar');
+        const interval = setInterval(() => {
+          progress += 10;
+          progressBar.style.width = `${progress}%`;
+          
+          if (progress >= 100) {
+            clearInterval(interval);
+            // 淡出加载界面
+            document.getElementById('app-loading').style.opacity = '0';
+            setTimeout(() => {
+              document.getElementById('app-loading').style.display = 'none';
+              document.getElementById('app').style.display = 'block';
+            }, 500);
+          }
+        }, 300);
+      };
+      
+      // 3. 处理脚本加载失败
+      script.onerror = () => {
+        document.querySelector('.loading-text').textContent = '加载失败，请刷新页面或检查网络连接';
+        document.querySelector('.app-loading-spinner').style.display = 'none';
+        document.querySelector('.progress-container').style.display = 'none';
+        
+        // 添加重试按钮
+        const retryButton = document.createElement('button');
+        retryButton.textContent = '重试加载';
+        retryButton.style.marginTop = '20px';
+        retryButton.style.padding = '10px 20px';
+        retryButton.style.background = '#4285f4';
+        retryButton.style.color = 'white';
+        retryButton.style.border = 'none';
+        retryButton.style.borderRadius = '5px';
+        retryButton.style.cursor = 'pointer';
+        retryButton.style.fontSize = '16px';
+        retryButton.onclick = () => window.location.reload();
+        
+        document.getElementById('app-loading').appendChild(retryButton);
+      };
+      
+      // 4. 将脚本添加到文档
+      document.body.appendChild(script);
+    });
+  </script>
 </body>
 </html>
