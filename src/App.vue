@@ -1,5 +1,17 @@
 <template>
   <div class="bench-container" v-if="initialized">
+    <!-- 顶部导航栏 -->
+    <div class="header">
+      <div class="logo">AI BenchBase</div>
+      <div class="auth-section">
+        <template v-if="currentUser">
+          <span>欢迎, {{ currentUser.user_metadata.name || currentUser.email }}</span>
+          <button @click="signOut" class="sign-out-btn">退出</button>
+        </template>
+        <button v-else @click="signIn" class="sign-in-btn">登录</button>
+      </div>
+    </div>
+    
     <!-- 筛选区内容保持不变 -->
   </div>
   <div v-else class="loading-overlay">
@@ -9,20 +21,17 @@
 </template>
 
 <script>
-import axios from 'axios'
-import moment from 'moment'
+import { supabase, getCurrentUser, signIn, signOut } from './supabase/client'
 import LineChart from './components/LineChart.vue'
-
-// 注册Chart.js
-import { Chart } from 'chart.js'
-Chart.register();
 
 export default {
   components: { LineChart },
   data() {
     return {
       initialized: false,
+      currentUser: null,
       // 其他数据属性保持不变
+      comparisonData: []
     }
   },
   mounted() {
@@ -30,18 +39,25 @@ export default {
   },
   methods: {
     async initializeApp() {
+      // 检查用户登录状态
+      this.currentUser = getCurrentUser()
+      
       try {
-        // 等待API服务就绪
-        await axios.get('https://jsonplaceholder.typicode.com/todos/1');
+        // 从Supabase获取数据
+        const { data, error } = await supabase
+          .from('hardware_benchmarks')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(20)
         
-        // 初始数据加载
-        await this.fetchData();
+        if (error) throw error
         
-        // 标记初始化完成
-        this.initialized = true;
+        this.comparisonData = data
+        this.prepareChartData(data)
+        this.initialized = true
       } catch (error) {
-        console.log('使用模拟数据展示');
-        // 使用模拟数据
+        console.error('数据库连接失败:', error)
+        // 使用模拟数据作为后备
         this.comparisonData = [
           { id: 1, device: "NVIDIA RTX 4090", value: 90.5, created_at: "2023-10-05T14:30:00Z" },
           { id: 2, device: "AMD RX 7900 XTX", value: 78.2, created_at: "2023-10-05T15:15:00Z" },
@@ -53,12 +69,62 @@ export default {
         this.initialized = true;
       }
     },
+    
+    signIn() {
+      signIn()
+    },
+    
+    signOut() {
+      signOut()
+    },
+    
     // 其他方法保持不变
   }
 }
 </script>
 
 <style scoped>
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4285f4;
+}
+
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sign-in-btn, .sign-out-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.sign-in-btn {
+  background: #4285f4;
+  color: white;
+}
+
+.sign-out-btn {
+  background: #f5f7fa;
+  border: 1px solid #e2e8f0;
+}
+
+/* 保留原有的加载样式 */
 .loading-overlay {
   position: fixed;
   top: 0;

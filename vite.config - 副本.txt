@@ -8,12 +8,15 @@ export default defineConfig({
     port: 5173,
     open: true,
     proxy: {
-      // 移除原有的API代理，因为现在直接使用Supabase
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
     }
   },
   build: {
     outDir: 'dist',
-    assetsDir: 'assets',
-    emptyOutDir: true
+    assetsDir: 'assets'
   }
 })
