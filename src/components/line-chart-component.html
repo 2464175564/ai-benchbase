@@ -1,0 +1,67 @@
+<template>
+  <canvas ref="chartCanvas"></canvas>
+</template>
+
+<script>
+import { Chart, registerables } from 'chart.js'
+
+export default {
+  props: {
+    chartData: Object,
+    options: Object
+  },
+  mounted() {
+    this.renderChart()
+  },
+  methods: {
+    renderChart() {
+      Chart.register(...registerables)
+      
+      // 确保画布已准备好
+      if (!this.$refs.chartCanvas) return
+      
+      // 清理旧图表
+      if (this.chartInstance) {
+        this.chartInstance.destroy()
+      }
+      
+      // 创建新图表
+      this.chartInstance = new Chart(this.$refs.chartCanvas, {
+        type: 'line',
+        data: this.chartData,
+        options: this.options
+      })
+    }
+  },
+  watch: {
+    chartData: {
+      handler() {
+        this.$nextTick(() => {
+          this.renderChart()
+        })
+      },
+      deep: true
+    },
+    options: {
+      handler() {
+        this.$nextTick(() => {
+          this.renderChart()
+        })
+      },
+      deep: true
+    }
+  },
+  beforeUnmount() {
+    if (this.chartInstance) {
+      this.chartInstance.destroy()
+    }
+  }
+}
+</script>
+
+<style scoped>
+canvas {
+  min-height: 400px;
+  width: 100%;
+}
+</style>

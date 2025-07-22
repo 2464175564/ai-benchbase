@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI硬件测评平台</title>
+  <script>
+    if (window.location.pathname !== '/ai-benchbase-frontend/') {
+      sessionStorage.redirect = location.pathname;
+      window.location.replace('/ai-benchbase-frontend/');
+    }
+  </script>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+    }
+    .redirect-box {
+      padding: 2rem;
+      border-radius: 8px;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #4285f4;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="redirect-box">
+    <h2>正在加载AI硬件测评平台</h2>
+    <div class="loader"></div>
+    <p>如果长时间未跳转，<a href="/ai-benchbase-frontend/">请点击这里</a></p>
+  </div>
+</body>
+</html>

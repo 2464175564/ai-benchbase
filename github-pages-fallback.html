@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AI硬件测评平台</title>
+    <script>
+      // GitHub Pages SPA路由回退方案
+      sessionStorage.redirect = location.pathname;
+      window.location.replace('/ai-benchbase-frontend/');
+    </script>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: Arial, sans-serif;
+        background: #f5f7fa;
+      }
+      .redirect-message {
+        padding: 20px;
+        border-radius: 8px;
+        background: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="redirect-message">
+      正在将您重定向到 AI硬件测评平台...
+    </div>
+  </body>
+</html>
