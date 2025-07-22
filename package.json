@@ -1,6 +1,7 @@
 {
   "name": "ai-benchbase-frontend",
   "version": "1.0.0",
+  "homepage": "https://2464175564.github.io/ai-benchbase/"
   "private": true,
   "scripts": {
     "dev": "vite",
